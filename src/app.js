@@ -22,7 +22,7 @@ app.use(
 );
 app.use(morgan("dev"));
 app.get("/", (req, res) => {
-  res.send("Hello World!");
+  res.write("Hello World!");
 });
 app.post("/token", async (req, res) => {
   const { identity } = req.body;
