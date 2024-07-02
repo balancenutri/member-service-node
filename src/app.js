@@ -22,17 +22,7 @@ const client = twilio(ACCOUNT_SID, AUTH_TOKEN);
 
 
 app.get("/", (req, res) => {
-  res.send(`<!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Member Service API #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
-        <h1 style="color: #333333;">Welcome to the Member Service API</h1>
-        <p style="color: #666666;">This is the first Landing Page to Member Service Backend!</p>
-      </div>
-    </body>
-   </html>`);
+  res.send("Hello World!");
 });
 app.post("/token", async (req, res) => {
   const { identity } = req.body;
@@ -72,10 +62,10 @@ app.post("/voice", (req, res) => {
   const response = new VoiceResponse();
 
   const dial = response.dial({
-    callerId: process.env.TWILIO_PHONE_NUMBER,
+    callerId: process.env.TWILIO_PHONE,
   });
 
-  dial.number(req.body.To);
+  dial.number("+918850701556");
 
   res.type("text/xml");
   res.send(response.toString());
