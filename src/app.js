@@ -7,6 +7,10 @@ import twilio from "twilio";
 dotenv.config();
 
 const app = express();
+app.use(express.json());
+app.use(cors());
+app.use(express.urlencoded({ extended: true }));
+app.use(morgan("dev"));
 const PORT = process.env.PORT || 8080;
 
 const ACCOUNT_SID = process.env.ACCOUNT_SID;
@@ -15,13 +19,7 @@ const AUTH_TOKEN = process.env.AUTH_TOKEN;
 const TWILIO_PHONE = process.env.TWILIO_PHONE;
 const client = twilio(ACCOUNT_SID, AUTH_TOKEN);
 
-app.use(express.json());
-app.use(
-  cors({
-    origin: ["http://localhost:8080"],
-  })
-);
-app.use(morgan("dev"));
+
 
 app.get("/", (req, res) => {
   res.send(`<!DOCTYPE html>
