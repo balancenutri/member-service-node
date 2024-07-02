@@ -15,7 +15,11 @@ const TWILIO_PHONE = process.env.TWILIO_PHONE;
 const client = twilio(ACCOUNT_SID, AUTH_TOKEN);
 
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:8080"],
+  })
+);
 app.use(morgan("dev"));
 
 app.post("/token", async (req, res) => {
