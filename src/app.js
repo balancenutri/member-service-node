@@ -72,7 +72,7 @@ dial.number(req.body.To);
 });
 
 app.get("/call-status", async (req, res) => {
-  const { callSid } = req.body;
+  const { callSid } = req.query;
   try {
     const call = await client.calls(callSid).fetch();
     res.json({
