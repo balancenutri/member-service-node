@@ -71,7 +71,7 @@ dial.number(req.body.To);
   res.send(response.toString());
 });
 
-app.post("/call-status", async (req, res) => {
+app.get("/call-status", async (req, res) => {
   const { callSid } = req.body;
   try {
     const call = await client.calls(callSid).fetch();
@@ -80,7 +80,6 @@ app.post("/call-status", async (req, res) => {
       message: "Call status fetched successfully",
       data: {
         status: call.status,
-        duration: call.duration,
       },
     });
   } catch (error) {
