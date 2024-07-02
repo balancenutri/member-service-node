@@ -64,8 +64,8 @@ app.post("/voice", (req, res) => {
   const dial = response.dial({
     callerId: process.env.TWILIO_PHONE,
   });
-console.log(req.body);
-dial.number(req.body.to);
+
+dial.number(req.body.To);
 
   res.type("text/xml");
   res.send(response.toString());
