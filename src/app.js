@@ -1,15 +1,16 @@
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
-import { configDotenv } from "dotenv";
+import dotenv from "dotenv";
 import twilio from "twilio";
 
-configDotenv();
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 8080;
 
 const ACCOUNT_SID = process.env.ACCOUNT_SID;
+
 const AUTH_TOKEN = process.env.AUTH_TOKEN;
 const TWILIO_PHONE = process.env.TWILIO_PHONE;
 const client = twilio(ACCOUNT_SID, AUTH_TOKEN);
@@ -21,8 +22,19 @@ app.use(
   })
 );
 app.use(morgan("dev"));
+
 app.get("/", (req, res) => {
-  res.write("Hello World!");
+  res.send(`<!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Member Service API #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+        <h1 style="color: #333333;">Welcome to the Member Service API</h1>
+        <p style="color: #666666;">This is the first Landing Page to Member Service Backend!</p>
+      </div>
+    </body>
+   </html>`);
 });
 app.post("/token", async (req, res) => {
   const { identity } = req.body;
