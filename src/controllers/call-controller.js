@@ -119,18 +119,21 @@ const callRecordingController = async (req, res, next) => {
 
 const getAllCallsController = async (req, res, next) => {
   try {
-    const callsRef = fireStore.collection("calls");
-    const snapshot = await callsRef.get();
-    if (snapshot.empty) {
-      return next(new ErrorHandler("No calls Found", 200));
-    }
-    let calls = [];
-    snapshot.forEach((doc) => {
-      calls.push({
-        id: doc.id,
-        ...doc.data(),
+      const callsRef = fireStore.collection("calls");
+      const snapshot = await callsRef.get();
+
+      if (snapshot.empty) {
+        console.log("I worked", 126);
+        return next(new ErrorHandler("No calls Found", 400));
+      }
+      let calls = [];
+      snapshot.forEach((doc) => {
+        calls.push({
+          id: doc.id,
+          ...doc.data(),
+        });
       });
-    });
+      console.log(calls);
     return res.status(200).json({
       success: true,
       message: "Calls Retrieved Successfully",
