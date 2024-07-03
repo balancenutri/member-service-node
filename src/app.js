@@ -7,7 +7,9 @@ import { errorMiddleware } from "./middlewares/error.js";
 // routes Import
 import callRouter from "./routes/call-routes.js";
 
+
 configDotenv();
+
 const app = express();
 app.use(
   cors({

@@ -84,9 +84,9 @@ const callRecordingController = async (req, res, next) => {
         password: process.env.AUTH_TOKEN,
       },
     });
-      const buffer = Buffer.from(response.data, "binary");
-      const bucket = storage.bucket();
-      const file = bucket.file(`recordings/${recordingSid}.wav`);
+    const buffer = Buffer.from(response.data, "binary");
+    const bucket = storage.bucket();
+    const file = bucket.file(`recordings/${recordingSid}.wav`);
     await file.save(buffer, {
       contentType: "audio/wav",
       metadata: {
@@ -94,10 +94,16 @@ const callRecordingController = async (req, res, next) => {
         dateTime: new Date().toISOString(),
       },
     });
+    const callDetail = await client.calls(callSid).fetch();
+
     await fireStore.collection("calls").add({
       callSid: callSid,
       recordingUrl: `gs://${bucket.name}/${file.name}`,
       datetime: new Date().toISOString(),
+      from: callDetail.fromFormatted,
+      to: callDetail.toFormatted,
+      duration: callDetail.duration,
+      callStatus: callDetail.status,
     });
     return res.status(200).json({
       success: true,
@@ -110,9 +116,38 @@ const callRecordingController = async (req, res, next) => {
     );
   }
 };
+
+const getAllCallsController = async (req, res, next) => {
+  try {
+    const callsRef = fireStore.collection("calls");
+    const snapshot = await callsRef.get();
+    if (snapshot.empty) {
+      return next(new ErrorHandler("No calls Found", 200));
+    }
+    let calls = [];
+    snapshot.forEach((doc) => {
+      calls.push({
+        id: doc.id,
+        ...doc.data(),
+      });
+    });
+    return res.status(200).json({
+      success: true,
+      message: "Calls Retrieved Successfully",
+      data: {
+        calls,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    const snapshot = await callsRef.get();
+    return next(new ErrorHandler("Internal Server Error", 500));
+  }
+};
 export {
   getCallStatusController,
   twilioTokenGeneratorController,
   voiceController,
   callRecordingController,
+  getAllCallsController,
 };
