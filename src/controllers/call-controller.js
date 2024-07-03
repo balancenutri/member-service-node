@@ -1,6 +1,8 @@
+import { configDotenv } from "dotenv";
 import twilio from "twilio";
-import { client } from "../app.js";
 import { ErrorHandler } from "../utility/ErrorClass.js";
+configDotenv();
+const client = twilio(process.env.ACCOUNT_SID, process.env.AUTH_TOKEN);
 
 const voiceController = async (req, res) => {
   const VoiceResponse = twilio.twiml.VoiceResponse;
@@ -63,7 +65,7 @@ const getCallStatusController = async (req, res, next) => {
   }
 };
 export {
-  voiceController,
-  twilioTokenGeneratorController,
   getCallStatusController,
+  twilioTokenGeneratorController,
+  voiceController,
 };

@@ -1,14 +1,13 @@
-import express from "express";
 import cors from "cors";
+import { configDotenv } from "dotenv";
+import express from "express";
 import morgan from "morgan";
-import dotenv from "dotenv";
-import twilio from "twilio";
 import { errorMiddleware } from "./middlewares/error.js";
 
 // routes Import
 import callRouter from "./routes/call-routes.js";
 
-dotenv.config();
+configDotenv();
 const app = express();
 app.use(
   cors({
@@ -19,9 +18,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 const PORT = process.env.PORT || 8080;
-const ACCOUNT_SID = process.env.ACCOUNT_SID;
-const AUTH_TOKEN = process.env.AUTH_TOKEN;
-export const client = twilio(ACCOUNT_SID, AUTH_TOKEN);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
