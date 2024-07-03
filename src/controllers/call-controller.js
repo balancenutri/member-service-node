@@ -17,11 +17,6 @@ const voiceController = async (req, res) => {
       "https://member-service-node.vercel.app/api/call/call-recording",
   });
   dial.number(req.body.To);
-  response.record({
-    transcribe: true,
-    transcribeCallback:
-      "https://member-service-node.vercel.app/api/call/transcribe",
-  });
 
   res.type("text/xml");
   res.send(response.toString());
@@ -156,14 +151,11 @@ const getAllCallsController = async (req, res, next) => {
     return next(new ErrorHandler("Internal Server Error", 500));
   }
 };
-const transcribeCallController = async (req, res, next) => {
-  console.log(req.body);
-};
+
 export {
   getCallStatusController,
   twilioTokenGeneratorController,
   voiceController,
   callRecordingController,
   getAllCallsController,
-  transcribeCallController,
 };
