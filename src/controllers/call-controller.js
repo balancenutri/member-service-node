@@ -1,6 +1,8 @@
 import { configDotenv } from "dotenv";
 import twilio from "twilio";
 import { ErrorHandler } from "../utility/ErrorClass.js";
+import { storage, fireStore } from "../config/firebaseconfig.js";
+import axios from "axios";
 configDotenv();
 const client = twilio(process.env.ACCOUNT_SID, process.env.AUTH_TOKEN);
 
@@ -69,9 +71,39 @@ const getCallStatusController = async (req, res, next) => {
 };
 
 const callRecordingController = async (req, res, next) => {
-  const recordingUrl = req.body.RecordingUrl;
-  console.log(recordingUrl, 73);
-  console.log(req.body, 74);
+  const recordingUrl = req.body.RecordingUrl + ".wav";
+  const recordingSid = req.body.RecordingSid;
+  const callSid = req.body.CallSid;
+  try {
+    const res = await axios({
+      method: "get",
+      url: recordingUrl,
+      responseType: "arraybuffer",
+    });
+    const buffer = Buffer.from(response.data, "binary");
+    const file = storage.file(`recordings/${recordingSid}.wav`);
+    await file.save(buffer, {
+      contentType: "audio/wav",
+      metadata: {
+        callSid,
+        dateTime: new Date().toISOString(),
+      },
+    });
+    await fireStore.collection("calls").add({
+      callSid: callSid,
+      recordingUrl: `gs://${storage.name}/${file.name}`,
+      datetime: new Date().toISOString(),
+    });
+    return res.status(200).json({
+      success: true,
+      message: "Call Recorded And Saved Successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    return next(
+      new ErrorHandler("Error Recording and Storing Call Recording", 500)
+    );
+  }
 };
 export {
   getCallStatusController,
