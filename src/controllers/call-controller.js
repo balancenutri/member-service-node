@@ -94,15 +94,17 @@ const callRecordingController = async (req, res, next) => {
         dateTime: new Date().toISOString(),
       },
     });
-    const callDetail = await client.calls(callSid).fetch();
+      const callDetail = await client.calls(callSid).fetch();
+      await file.makePublic();
+      const publicUrl = `https://storage.googleapis.com/${bucket.name}/${file.name}`;
 
-    await fireStore.collection("calls").add({
-      callSid: callSid,
-      recordingUrl: `gs://${bucket.name}/${file.name}`,
-      datetime: new Date().toISOString(),
-      duration: callDetail.duration,
-      callStatus: callDetail.status,
-    });
+      await fireStore.collection("calls").add({
+        callSid: callSid,
+        recordingUrl: publicUrl,
+        datetime: new Date().toISOString(),
+        duration: callDetail.duration,
+        callStatus: callDetail.status,
+      });
     return res.status(200).json({
       success: true,
       message: "Call Recorded And Saved Successfully",
