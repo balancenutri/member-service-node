@@ -100,8 +100,6 @@ const callRecordingController = async (req, res, next) => {
       callSid: callSid,
       recordingUrl: `gs://${bucket.name}/${file.name}`,
       datetime: new Date().toISOString(),
-      from: callDetail.fromFormatted,
-      to: callDetail.to,
       duration: callDetail.duration,
       callStatus: callDetail.status,
     });
