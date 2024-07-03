@@ -123,7 +123,13 @@ const getAllCallsController = async (req, res, next) => {
     const snapshot = await callsRef.get();
 
     if (snapshot.empty) {
-      return next(new ErrorHandler("No calls Found", 200));
+        return res.status(200).json({
+          success: true,
+          message: "No chats Found",
+          data: {
+            calls: [],
+          },
+        });
     }
     let calls = [];
     snapshot.forEach((doc) => {
