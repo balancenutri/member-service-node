@@ -123,7 +123,7 @@ const getAllCallsController = async (req, res, next) => {
     const snapshot = await callsRef.get();
 
     if (snapshot.empty) {
-      return next(new ErrorHandler("No calls Found", 400));
+      return next(new ErrorHandler("No calls Found", 200));
     }
     let calls = [];
     snapshot.forEach((doc) => {
