@@ -79,6 +79,10 @@ const callRecordingController = async (req, res, next) => {
       method: "get",
       url: recordingUrl,
       responseType: "arraybuffer",
+      auth: {
+        username: process.env.ACCOUNT_SID,
+        password: process.env.AUTH_TOKEN,
+      },
     });
     const buffer = Buffer.from(response.data, "binary");
     const file = storage.file(`recordings/${recordingSid}.wav`);
