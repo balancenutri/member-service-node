@@ -22,4 +22,6 @@ admin.initializeApp({
 const fireStore = admin.firestore();
 const storage = admin.storage();
 
+
+
 export { fireStore, storage };

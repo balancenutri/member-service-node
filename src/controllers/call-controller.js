@@ -84,8 +84,9 @@ const callRecordingController = async (req, res, next) => {
         password: process.env.AUTH_TOKEN,
       },
     });
-    const buffer = Buffer.from(res.data, "binary");
-    const file = storage.file(`recordings/${recordingSid}.wav`);
+      const buffer = Buffer.from(res.data, "binary");
+      const bucket = storage.bucket();
+      const file = bucket.file(`recordings/${recordingSid}.wav`);
     await file.save(buffer, {
       contentType: "audio/wav",
       metadata: {
