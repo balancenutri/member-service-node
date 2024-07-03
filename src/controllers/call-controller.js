@@ -75,7 +75,7 @@ const callRecordingController = async (req, res, next) => {
   const recordingSid = req.body.RecordingSid;
   const callSid = req.body.CallSid;
   try {
-    const res = await axios({
+    const response = await axios({
       method: "get",
       url: recordingUrl,
       responseType: "arraybuffer",
@@ -84,7 +84,7 @@ const callRecordingController = async (req, res, next) => {
         password: process.env.AUTH_TOKEN,
       },
     });
-      const buffer = Buffer.from(res.data, "binary");
+      const buffer = Buffer.from(response.data, "binary");
       const bucket = storage.bucket();
       const file = bucket.file(`recordings/${recordingSid}.wav`);
     await file.save(buffer, {
@@ -96,7 +96,7 @@ const callRecordingController = async (req, res, next) => {
     });
     await fireStore.collection("calls").add({
       callSid: callSid,
-      recordingUrl: `gs://${storage.name}/${file.name}`,
+      recordingUrl: `gs://${bucket.name}/${file.name}`,
       datetime: new Date().toISOString(),
     });
     return res.status(200).json({
