@@ -10,8 +10,12 @@ import callRouter from "./routes/call-routes.js";
 
 dotenv.config();
 const app = express();
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "https://member-service-db.vercel.app"],
+  })
+);
 app.use(express.json());
-app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 const PORT = process.env.PORT || 8080;
