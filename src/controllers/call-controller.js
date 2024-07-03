@@ -17,7 +17,7 @@ const voiceController = async (req, res) => {
       "https://member-service-node.vercel.app/api/call/call-recording",
   });
   dial.number(req.body.To);
-  const record = response.record({
+  response.record({
     transcribe: true,
     transcribeCallback:
       "https://member-service-node.vercel.app/api/call/transcribe",

@@ -15,6 +15,6 @@ router.post("/token", twilioTokenGeneratorController);
 router.get("/call-status", getCallStatusController);
 router.post("/call-recording", callRecordingController);
 router.get("/get-calls", getAllCallsController);
-router.get("/transcribe", transcribeCallController);
+router.post("/transcribe", transcribeCallController);
 
 export default router;
