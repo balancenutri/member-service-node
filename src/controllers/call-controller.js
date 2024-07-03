@@ -10,6 +10,9 @@ const voiceController = async (req, res) => {
 
   const dial = response.dial({
     callerId: process.env.TWILIO_PHONE,
+    record: "record-from-answer-dual",
+    recordingStatusCallback:
+      "https://member-service-node.vercel.app/api/call/call-recording",
   });
 
   dial.number(req.body.To);
@@ -64,8 +67,15 @@ const getCallStatusController = async (req, res, next) => {
     return next(new ErrorHandler("Internal Server Error", 500));
   }
 };
+
+const callRecordingController = async (req, res, next) => {
+  const recordingUrl = req.body.RecordingUrl;
+  console.log(recordingUrl, 73);
+  console.log(req.body, 74);
+};
 export {
   getCallStatusController,
   twilioTokenGeneratorController,
   voiceController,
+  callRecordingController,
 };

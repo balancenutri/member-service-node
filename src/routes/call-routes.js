@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  callRecordingController,
   getCallStatusController,
   twilioTokenGeneratorController,
   voiceController,
@@ -10,5 +11,6 @@ const router = express.Router();
 router.post("/voice", voiceController);
 router.post("/token", twilioTokenGeneratorController);
 router.get("/call-status", getCallStatusController);
+router.post("/call-recording", callRecordingController);
 
 export default router;
