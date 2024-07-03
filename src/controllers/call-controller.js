@@ -16,8 +16,12 @@ const voiceController = async (req, res) => {
     recordingStatusCallback:
       "https://member-service-node.vercel.app/api/call/call-recording",
   });
-
   dial.number(req.body.To);
+  const record = response.record({
+    transcribe: true,
+    transcribeCallback:
+      "https://member-service-node.vercel.app/api/call/transcribe",
+  });
 
   res.type("text/xml");
   res.send(response.toString());
@@ -94,17 +98,17 @@ const callRecordingController = async (req, res, next) => {
         dateTime: new Date().toISOString(),
       },
     });
-      const callDetail = await client.calls(callSid).fetch();
-      await file.makePublic();
-      const publicUrl = `https://storage.googleapis.com/${bucket.name}/${file.name}`;
+    const callDetail = await client.calls(callSid).fetch();
+    await file.makePublic();
+    const publicUrl = `https://storage.googleapis.com/${bucket.name}/${file.name}`;
 
-      await fireStore.collection("calls").add({
-        callSid: callSid,
-        recordingUrl: publicUrl,
-        datetime: new Date().toISOString(),
-        duration: callDetail.duration,
-        callStatus: callDetail.status,
-      });
+    await fireStore.collection("calls").add({
+      callSid: callSid,
+      recordingUrl: publicUrl,
+      datetime: new Date().toISOString(),
+      duration: callDetail.duration,
+      callStatus: callDetail.status,
+    });
     return res.status(200).json({
       success: true,
       message: "Call Recorded And Saved Successfully",
@@ -123,13 +127,13 @@ const getAllCallsController = async (req, res, next) => {
     const snapshot = await callsRef.get();
 
     if (snapshot.empty) {
-        return res.status(200).json({
-          success: true,
-          message: "No chats Found",
-          data: {
-            calls: [],
-          },
-        });
+      return res.status(200).json({
+        success: true,
+        message: "No chats Found",
+        data: {
+          calls: [],
+        },
+      });
     }
     let calls = [];
     snapshot.forEach((doc) => {
@@ -152,10 +156,14 @@ const getAllCallsController = async (req, res, next) => {
     return next(new ErrorHandler("Internal Server Error", 500));
   }
 };
+const transcribeCallController = async (req, res, next) => {
+  console.log(req.body);
+};
 export {
   getCallStatusController,
   twilioTokenGeneratorController,
   voiceController,
   callRecordingController,
   getAllCallsController,
+  transcribeCallController,
 };
