@@ -158,7 +158,7 @@ const callRecordingController = async (req, res, next) => {
 
 const getAllCallsController = async (req, res, next) => {
   try {
-    const callsRef = fireStore.collection("calls");
+     const callsRef = fireStore.collection("calls").orderBy("datetime", "desc");
     const snapshot = await callsRef.get();
 
     if (snapshot.empty) {
