@@ -99,10 +99,11 @@ const callRecordingController = async (req, res, next) => {
     const publicUrl = `https://storage.googleapis.com/${
       bucket.name
     }/${encodeURIComponent(file.name)}`;
-    console.log(file);
+    const gpc = `gs://${bucket.name}/${file.name}`;
+
     const [operation] = await speech.longRunningRecognize({
       audio: {
-        uri: file,
+        uri: gpc,
       },
       config: {
         encoding: "LINEAR16",
