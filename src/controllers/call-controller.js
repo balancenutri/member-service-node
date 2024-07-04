@@ -114,7 +114,6 @@ const callRecordingController = async (req, res, next) => {
         encoding: "LINEAR16",
         sampleRateHertz: sampleRateHertz,
         languageCode: "en-US",
-        alternativeLanguageCodes: ["hi-IN"],
         audioChannelCount: 2,
         enableSeparateRecognitionPerChannel: true,
       },
