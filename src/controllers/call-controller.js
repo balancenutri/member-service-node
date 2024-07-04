@@ -75,6 +75,7 @@ const callRecordingController = async (req, res, next) => {
   const recordingUrl = req.body.RecordingUrl + ".wav";
   const recordingSid = req.body.RecordingSid;
   const callSid = req.body.CallSid;
+  console.log(callSid, "Call SId", 78);
   try {
     const response = await axios({
       method: "get",
