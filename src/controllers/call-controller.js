@@ -96,7 +96,9 @@ const callRecordingController = async (req, res, next) => {
     });
     const callDetail = await client.calls(callSid).fetch();
     await file.makePublic();
-    const publicUrl = `https://storage.googleapis.com/${bucket.name}/${file.name}`;
+    const publicUrl = `https://storage.googleapis.com/${
+      bucket.name
+    }/${encodeURIComponent(file.name)}`;
 
     const [operation] = await speech.longRunningRecognize({
       audio: {
