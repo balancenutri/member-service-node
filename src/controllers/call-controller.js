@@ -3,9 +3,10 @@ import twilio from "twilio";
 import { ErrorHandler } from "../utility/ErrorClass.js";
 import { storage, fireStore } from "../config/firebaseconfig.js";
 import axios from "axios";
-configDotenv();
-const client = twilio(process.env.ACCOUNT_SID, process.env.AUTH_TOKEN);
+import { client } from "../config/twilioConfig.js";
+import { speech } from "../config/googleSpeechToTextconfig.js";
 
+configDotenv();
 const voiceController = async (req, res) => {
   const VoiceResponse = twilio.twiml.VoiceResponse;
   const response = new VoiceResponse();
@@ -97,13 +98,33 @@ const callRecordingController = async (req, res, next) => {
     await file.makePublic();
     const publicUrl = `https://storage.googleapis.com/${bucket.name}/${file.name}`;
 
+    const [operation] = await speech.longRunningRecognize({
+      audio: {
+        uri: publicUrl,
+      },
+      config: {
+        encoding: "LINEAR16",
+        sampleRateHertz: 16000,
+        languageCode: "en-US",
+        alternativeLanguageCodes: ["hi-IN"],
+        enableSpeakerDiarization: true,
+        diarizationSpeakerCount: 2,
+      },
+    });
+    const [response2] = await operation.promise();
+
+    const transcription = response2.results
+      .map((result) => result.alternatives[0].transcript)
+      .join(",");
     await fireStore.collection("calls").add({
       callSid: callSid,
       recordingUrl: publicUrl,
       datetime: new Date().toISOString(),
       duration: callDetail.duration,
       callStatus: callDetail.status,
+      calltranscription: transcription,
     });
+
     return res.status(200).json({
       success: true,
       message: "Call Recorded And Saved Successfully",
@@ -147,7 +168,7 @@ const getAllCallsController = async (req, res, next) => {
     });
   } catch (error) {
     console.log(error);
-    const snapshot = await callsRef.get();
+
     return next(new ErrorHandler("Internal Server Error", 500));
   }
 };
