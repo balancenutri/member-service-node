@@ -28,18 +28,7 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 app.use("/api/call", callRouter);
-const mainCallDetail = await client
-  .calls("CA23263cc7358f02b174729f9eb5d1ef77")
-  .fetch();
-const childCalls = await client.calls.list({
-  parentCallSid: "CA23263cc7358f02b174729f9eb5d1ef77",
-});
-const actualCallDetail = childCalls.find(
-  (call) => call.direction === "outbound-dial"
-);
 
-// Extract details from the actual call
-// const { to, from, duration, status } = actualCallDetail;;
 
 
 app.use(errorMiddleware);

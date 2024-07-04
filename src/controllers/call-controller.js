@@ -75,7 +75,17 @@ const callRecordingController = async (req, res, next) => {
   const recordingUrl = req.body.RecordingUrl + ".wav";
   const recordingSid = req.body.RecordingSid;
   const callSid = req.body.CallSid;
-  console.log(callSid, "Call SId", 78);
+  const mainCallDetail = await client.calls(callSid).fetch();
+  const childCalls = await client.calls.list({
+    parentCallSid: callSid,
+  });
+  const actualCallDetail = childCalls.find(
+    (call) => call.direction === "outbound-dial"
+  );
+
+  // Extract details from the actual call
+  const { to } = actualCallDetail;
+
   try {
     const response = await axios({
       method: "get",
@@ -127,6 +137,7 @@ const callRecordingController = async (req, res, next) => {
     await fireStore.collection("calls").add({
       callSid: callSid,
       recordingUrl: publicUrl,
+      to,
       datetime: new Date().toISOString(),
       duration: callDetail.duration,
       callStatus: callDetail.status,
