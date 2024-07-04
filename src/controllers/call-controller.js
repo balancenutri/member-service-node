@@ -101,21 +101,22 @@ const callRecordingController = async (req, res, next) => {
     const publicUrl = `https://storage.googleapis.com/${
       bucket.name
     }/${encodeURIComponent(file.name)}`;
-    const gpc = `gs://${bucket.name}/${file.name}`;
+    const gpccallRecordingLink = `gs://${bucket.name}/${file.name}`;
     const wavResult = decode(buffer);
+
     const sampleRateHertz = wavResult.sampleRate;
 
     const [operation] = await speech.longRunningRecognize({
       audio: {
-        uri: gpc,
+        uri: gpccallRecordingLink,
       },
       config: {
         encoding: "LINEAR16",
         sampleRateHertz: sampleRateHertz,
         languageCode: "en-US",
         alternativeLanguageCodes: ["hi-IN"],
-        enableSpeakerDiarization: true,
-        diarizationSpeakerCount: 2,
+        audioChannelCount: 2,
+        enableSeparateRecognitionPerChannel: true,
       },
     });
     const [response2] = await operation.promise();
