@@ -20,6 +20,7 @@
     "firebase-admin": "^12.2.0",
     "mongoose": "^8.4.4",
     "morgan": "^1.10.0",
+    "node-wav": "^0.0.2",
     "twilio": "^5.2.1"
   }
 }

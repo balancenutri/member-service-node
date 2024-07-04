@@ -5,6 +5,7 @@ import { storage, fireStore } from "../config/firebaseconfig.js";
 import axios from "axios";
 import { client } from "../config/twilioConfig.js";
 import { speech } from "../config/googleSpeechToTextconfig.js";
+import { decode } from "node-wav";
 
 configDotenv();
 const voiceController = async (req, res) => {
@@ -94,12 +95,15 @@ const callRecordingController = async (req, res, next) => {
         dateTime: new Date().toISOString(),
       },
     });
+
     const callDetail = await client.calls(callSid).fetch();
     await file.makePublic();
     const publicUrl = `https://storage.googleapis.com/${
       bucket.name
     }/${encodeURIComponent(file.name)}`;
     const gpc = `gs://${bucket.name}/${file.name}`;
+    const wavResult = decode(buffer);
+    const sampleRateHertz = wavResult.sampleRate;
 
     const [operation] = await speech.longRunningRecognize({
       audio: {
@@ -107,7 +111,7 @@ const callRecordingController = async (req, res, next) => {
       },
       config: {
         encoding: "LINEAR16",
-        sampleRateHertz: 16000,
+        sampleRateHertz: sampleRateHertz,
         languageCode: "en-US",
         alternativeLanguageCodes: ["hi-IN"],
         enableSpeakerDiarization: true,
