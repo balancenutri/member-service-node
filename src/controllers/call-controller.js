@@ -112,6 +112,7 @@ const callRecordingController = async (req, res, next) => {
     const publicUrl = `https://storage.googleapis.com/${
       bucket.name
     }/${encodeURIComponent(file.name)}`;
+    console.log(publicUrl, 115);
     const transcription = await client.intelligence.v2.transcripts.create({
       serviceSid: "GA2e348371774ebdf98ec7302721a6b1e7",
       channel: {
@@ -132,7 +133,7 @@ const callRecordingController = async (req, res, next) => {
     const transcriptionResult = await client.intelligence.v2
       .transcripts(transcription.sid)
       .fetch();
-    console.log(transcriptionResult, 135);
+    console.log(transcriptionResult.links.sentences, 135);
     await fireStore.collection("calls").add({
       callSid: callSid,
       recordingUrl: publicUrl,
@@ -140,7 +141,7 @@ const callRecordingController = async (req, res, next) => {
       datetime: new Date().toISOString(),
       duration: callDetail.duration,
       callStatus: callDetail.status,
-      callTranscription: transcriptionResult.transcriptText,
+      callTranscription: transcriptionResult.links.sentences,
     });
 
     return res.status(200).json({
