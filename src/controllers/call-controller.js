@@ -129,7 +129,7 @@ const callRecordingController = async (req, res, next) => {
         ],
       },
     });
-
+console.log(transcription);
     const transcriptionResult = await client.intelligence.v2
       .transcripts(transcription.sid)
       .fetch();
