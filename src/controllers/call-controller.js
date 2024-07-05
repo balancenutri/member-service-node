@@ -112,28 +112,16 @@ const callRecordingController = async (req, res, next) => {
     const publicUrl = `https://storage.googleapis.com/${
       bucket.name
     }/${encodeURIComponent(file.name)}`;
-    const gpccallRecordingLink = `gs://${bucket.name}/${file.name}`;
-    const wavResult = decode(buffer);
-
-    const sampleRateHertz = wavResult.sampleRate;
-
-    const [operation] = await speech.longRunningRecognize({
-      audio: {
-        uri: gpccallRecordingLink,
-      },
-      config: {
-        encoding: "LINEAR16",
-        sampleRateHertz: sampleRateHertz,
-        languageCode: "en-US",
-        audioChannelCount: 2,
-        enableSeparateRecognitionPerChannel: true,
-      },
+    const transcription = await client.intelligence.v2.transcripts.create({
+      mediaUrl: publicUrl,
+      language: "en-US",
+      redactPII: false,
     });
-    const [response2] = await operation.promise();
 
-    const transcription = response2.results
-      .map((result) => result.alternatives[0].transcript)
-      .join(",");
+    const transcriptionResult = await client.intelligence.v2
+      .transcripts(transcription.sid)
+      .fetch();
+    console.log(transcriptionResult);
     await fireStore.collection("calls").add({
       callSid: callSid,
       recordingUrl: publicUrl,
@@ -141,7 +129,7 @@ const callRecordingController = async (req, res, next) => {
       datetime: new Date().toISOString(),
       duration: callDetail.duration,
       callStatus: callDetail.status,
-      calltranscription: transcription,
+      callTranscription: transcriptionResult.transcriptText,
     });
 
     return res.status(200).json({
