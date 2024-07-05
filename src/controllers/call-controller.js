@@ -117,6 +117,7 @@ const callRecordingController = async (req, res, next) => {
       mediaUrl: publicUrl,
       language: "en-US",
       redactPII: false,
+      channel: "mixed",
     });
 
     const transcriptionResult = await client.intelligence.v2
