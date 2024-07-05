@@ -114,16 +114,25 @@ const callRecordingController = async (req, res, next) => {
     }/${encodeURIComponent(file.name)}`;
     const transcription = await client.intelligence.v2.transcripts.create({
       serviceSid: "GA2e348371774ebdf98ec7302721a6b1e7",
-      mediaUrl: publicUrl,
-      language: "en-US",
-      redactPII: false,
-      channel: "mixed",
+      channel: {
+        media_properties: {
+          source_sid: null,
+          media_url: publicUrl,
+        },
+        participants: [
+          { channel_participant: 1, role: "Dashboard_user" },
+          {
+            channel_participant: 2,
+            role: "Client",
+          },
+        ],
+      },
     });
 
     const transcriptionResult = await client.intelligence.v2
       .transcripts(transcription.sid)
       .fetch();
-    console.log(transcriptionResult);
+    console.log(transcriptionResult, 135);
     await fireStore.collection("calls").add({
       callSid: callSid,
       recordingUrl: publicUrl,
