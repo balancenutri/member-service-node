@@ -113,6 +113,7 @@ const callRecordingController = async (req, res, next) => {
       bucket.name
     }/${encodeURIComponent(file.name)}`;
     const transcription = await client.intelligence.v2.transcripts.create({
+      serviceSid: "GA2e348371774ebdf98ec7302721a6b1e7",
       mediaUrl: publicUrl,
       language: "en-US",
       redactPII: false,
