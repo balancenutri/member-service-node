@@ -1,11 +1,9 @@
+import axios from "axios";
 import { configDotenv } from "dotenv";
 import twilio from "twilio";
-import { ErrorHandler } from "../utility/ErrorClass.js";
-import { storage, fireStore } from "../config/firebaseconfig.js";
-import axios from "axios";
+import { fireStore, storage } from "../config/firebaseconfig.js";
 import { client } from "../config/twilioConfig.js";
-import { speech } from "../config/googleSpeechToTextconfig.js";
-import { decode } from "node-wav";
+import { ErrorHandler } from "../utility/ErrorClass.js";
 
 configDotenv();
 const voiceController = async (req, res) => {
@@ -75,7 +73,6 @@ const callRecordingController = async (req, res, next) => {
   const recordingUrl = req.body.RecordingUrl + ".wav";
   const recordingSid = req.body.RecordingSid;
   const callSid = req.body.CallSid;
-  const mainCallDetail = await client.calls(callSid).fetch();
   const childCalls = await client.calls.list({
     parentCallSid: callSid,
   });
@@ -112,28 +109,7 @@ const callRecordingController = async (req, res, next) => {
     const publicUrl = `https://storage.googleapis.com/${
       bucket.name
     }/${encodeURIComponent(file.name)}`;
-    console.log(publicUrl, 115);
-    const transcription = await client.intelligence.v2.transcripts.create({
-      serviceSid: "GA2e348371774ebdf98ec7302721a6b1e7",
-      channel: {
-        media_properties: {
-          source_sid: null,
-          media_url: publicUrl,
-        },
-        participants: [
-          { channel_participant: 1, role: "Dashboard_user" },
-          {
-            channel_participant: 2,
-            role: "Client",
-          },
-        ],
-      },
-    });
-console.log(transcription);
-    const transcriptionResult = await client.intelligence.v2
-      .transcripts(transcription.sid)
-      .fetch();
-    console.log(transcriptionResult.links.sentences, 135);
+
     await fireStore.collection("calls").add({
       callSid: callSid,
       recordingUrl: publicUrl,
@@ -141,7 +117,6 @@ console.log(transcription);
       datetime: new Date().toISOString(),
       duration: callDetail.duration,
       callStatus: callDetail.status,
-      callTranscription: transcriptionResult.links.sentences,
     });
 
     return res.status(200).json({
@@ -158,7 +133,7 @@ console.log(transcription);
 
 const getAllCallsController = async (req, res, next) => {
   try {
-     const callsRef = fireStore.collection("calls").orderBy("datetime", "desc");
+    const callsRef = fireStore.collection("calls").orderBy("datetime", "desc");
     const snapshot = await callsRef.get();
 
     if (snapshot.empty) {
@@ -193,9 +168,9 @@ const getAllCallsController = async (req, res, next) => {
 };
 
 export {
-  getCallStatusController,
-  twilioTokenGeneratorController,
-  voiceController,
   callRecordingController,
-  getAllCallsController,
+  getAllCallsController, getCallStatusController,
+  twilioTokenGeneratorController,
+  voiceController
 };
+
